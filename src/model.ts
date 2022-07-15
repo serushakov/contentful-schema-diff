@@ -49,7 +49,10 @@ export interface IContentType {
   displayField: string,
   name: string,
   description: string,
-  fields: IField[]
+  fields: IField[],
+  metadata?: {
+    annotations?: IAnnotations
+  }
 }
 
 export interface IField {
@@ -151,4 +154,17 @@ export interface IEditorInterface {
         },
       }
     >
+}
+
+export interface IAnnotations {
+  ContentType?: IAnnotationLink[],
+  ContentTypeField?: Record<string, IAnnotationLink[]>
+}
+
+export interface IAnnotationLink {
+  sys: {
+    id: string,
+    type: "Link",
+    linkType: "Annotation"
+  }
 }

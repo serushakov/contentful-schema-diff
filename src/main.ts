@@ -1,4 +1,5 @@
 import { string } from 'yargs'
+import { writeContentTypeAnnotations } from './annotations'
 import { writeCreate } from './create'
 import { writeDelete } from './delete'
 import { writeEditorInterfaceChange } from './editor_interface'
@@ -53,7 +54,8 @@ export default async function Run(args: IArgs) {
     } else {
       await writeCreate(toTypes[id], chunkWriter, context)
     }
-    return writeEditorInterfaceChange(fromEditorInterfaces[id], toEditorInterfaces[id], chunkWriter, context)
+    await writeEditorInterfaceChange(fromEditorInterfaces[id], toEditorInterfaces[id], chunkWriter, context)
+    await writeContentTypeAnnotations(toTypes[id], chunkWriter, context)
   })
   promises.push(...runner.run(Object.keys(fromTypes), (id, chunkWriter, context) => {
     if (toTypes[id]) {
