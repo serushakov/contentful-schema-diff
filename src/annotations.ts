@@ -23,3 +23,9 @@ export async function writeContentTypeAnnotations(to: IContentType, write: Async
   ${ctx.varname}.setAnnotations(${JSON.stringify(annotationIds)})
   `)
 }
+
+export function getFieldAnnotationIds(contentType: IContentType, fieldId: string) {
+  return contentType.metadata?.annotations
+    ?.ContentTypeField?.[fieldId]
+    ?.map(a => a.sys.id)
+}

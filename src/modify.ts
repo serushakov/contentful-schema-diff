@@ -1,5 +1,6 @@
+import { getFieldAnnotationIds } from './annotations'
 import { Diff, DiffArray, DiffObj, isDiff, isDiffItem, isDiffObj, isSimpleDiff } from './diff'
-import { IContentType, IField } from './model'
+import { IAnnotationLink, IAnnotations, IContentType, IField } from './model'
 import { IContext } from './runners'
 import {extendPrototypes} from './utils'
 extendPrototypes()
@@ -126,6 +127,10 @@ ${colorize(fieldsDiff, { color: false } )} */
     let create = `
     ${v}.createField('${field.id}', ${fieldDef.dump()})
   `
+    const annotations = getFieldAnnotationIds(to, field.id)
+    if(annotations) {
+      create += `.setAnnotations(${JSON.stringify(annotations)})`
+    }
     create += moveField(field)
 
     return create
@@ -166,6 +171,12 @@ ${colorize(fieldsDiff, { color: false } )} */
         .${key}(${newValue.dump()})`
     })
 
+    const annotations = getFieldAnnotationIds(to, toField.id)
+    if(annotations) {
+      base += `
+      .setAnnotations(${JSON.stringify(annotations)})
+      `
+    }
     return base + '\n'
   }
 

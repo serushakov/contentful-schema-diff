@@ -1,4 +1,4 @@
-import { Writable } from 'stream'
+import { getFieldAnnotationIds } from './annotations'
 import { IContentType } from './model'
 
 import { IContext } from './runners'
@@ -17,6 +17,14 @@ export async function writeCreate(
   delete(typeDef.fields)
   delete(typeDef.sys)
 
+  if(typeDef.metadata?.annotations) {
+    delete typeDef.metadata.annotations
+
+    if(Object.keys(typeDef.metadata).length === 0) {
+      delete typeDef.metadata
+    }
+  }
+
   await write(`
   const ${v} = migration.createContentType('${newType.sys.id}', ${typeDef.dump()})
 `)
@@ -26,8 +34,10 @@ export async function writeCreate(
     const fieldDef = Object.assign({}, field)
     delete(fieldDef.id)
 
+    const annotations = getFieldAnnotationIds(newType, field.id)
     await write(`
-  ${v}.createField('${field.id}', ${fieldDef.dump()})
-`)
+      ${v}.createField('${field.id}', ${fieldDef.dump()})
+      ${annotations ? `.setAnnotations(${JSON.stringify(annotations)})` : ''}
+    `)
   }
 }
